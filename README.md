@@ -1,4 +1,1 @@
-bookability
-===========
-
-Bookability client for PHP
+# Bookability

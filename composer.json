@@ -1,0 +1,28 @@
+{
+	"name": "bookability/bookability",
+	"type": "library",
+	"description": "Bookability client for PHP with support for API v1",
+	"keywords": [
+		"bookability",
+		"booking",
+		"twosuperior"
+	],
+	"homepage": "https://github.com/bookability/bookability",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Richard Davey",
+			"email": "richard@twosuperior.co.uk",
+			"homepage": "http://www.twosuperior.co.uk"
+		}
+	],
+	"minimum-stability": "dev",
+    "require": {
+		"php": ">=5.3.0"
+	},
+	"autoload": {
+		"psr-0": {
+			"bookability": "src"
+		}
+	}
+}

@@ -22,7 +22,7 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"bookability": "src"
+			"Bookability": "src/"
 		}
 	}
 }

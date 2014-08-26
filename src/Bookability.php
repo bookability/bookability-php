@@ -5,7 +5,6 @@ require_once 'Bookability/Customers.php';
 require_once 'Bookability/Events.php';
 require_once 'Bookability/Exceptions.php';
 require_once 'Bookability/Resources.php';
-require_once 'Bookability/Users.php';
 
 /*
  * This file is part of the Bookability package.
@@ -17,15 +16,27 @@ require_once 'Bookability/Users.php';
  */
 class Bookability
 {
+	/*
+	 * Declare API values
+	 *
+	 */
     public $apikey;
     public $ch;
     public $root  = 'https://www.bookability.io/api';
     public $debug = false;
 
+	/*
+	 * Define error list
+	 *
+	 */
     public static $error_map = array(
         "ValidationError" => "Bookability_ValidationError"
     );
 
+	/*
+	 * On creation of object, open cURL
+	 *
+	 */
     public function __construct($apikey = null, $opts = array()) 
 	{
         if (!$apikey) {
@@ -79,29 +90,37 @@ class Bookability
 		$this->users = new Bookability_Customers($this);
 		$this->users = new Bookability_Events($this);
 		$this->users = new Bookability_Resources($this);
-		$this->users = new Bookability_Users($this);
     }
 
+	/*
+	 * On destruction of object, close cURL
+	 *
+	 */
     public function __destruct() 
 	{
         curl_close($this->ch);
     }
-
-    public function call($url, $params) 
+	
+	/*
+	 * Make a call to the API
+	 *
+	 */
+    public function call($url, $params, $verb = 'GET') 
 	{
         $params['apikey'] = $this->apikey;
         
         $params = json_encode($params);
         $ch     = $this->ch;
 
-        curl_setopt($ch, CURLOPT_URL, $this->root . $url . '.json');
+        curl_setopt($ch, CURLOPT_URL, $this->root . $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
 
         $start = microtime(true);
         $this->log('Call to ' . $this->root . $url . '.json: ' . $params);
-        if($this->debug) {
+        if ($this->debug) {
             $curl_buffer = fopen('php://memory', 'w+');
             curl_setopt($ch, CURLOPT_STDERR, $curl_buffer);
         }
@@ -130,6 +149,46 @@ class Bookability
         return $result;
     }
 
+	/*
+	 * An alias for the GET call
+	 *
+	 */
+    public function get($url, $params) 
+	{
+		return $this->call($url, $params, 'GET');
+	}
+	
+	/*
+	 * An alias for the DELETE call
+	 *
+	 */
+    public function delete($url, $params) 
+	{
+		return $this->call($url, $params, 'DELETE');
+	}
+	
+	/*
+	 * An alias for the POST call
+	 *
+	 */
+    public function post($url, $params) 
+	{
+		return $this->call($url, $params, 'POST');
+	}
+	
+	/*
+	 * An alias for the PUT call
+	 *
+	 */
+    public function put($url, $params) 
+	{
+		return $this->call($url, $params, 'PUT');
+	}
+	
+	/*
+	 * Load additional config values
+	 *
+	 */
     public function readConfigs() 
 	{
         $paths = array('~/.bookability.key', '/etc/bookability.key');
@@ -144,6 +203,10 @@ class Bookability
         return false;
     }
 
+	/*
+	 * Process errors
+	 *
+	 */
     public function castError($result) 
 	{
         if ($result['status'] !== 'error' || !$result['name']) {
@@ -154,6 +217,10 @@ class Bookability
         return new $class($result['error'], $result['code']);
     }
 
+	/*
+	 * Log for debug output
+	 *
+	 */
     public function log($msg) 
 	{
         if ($this->debug) {
@@ -161,6 +228,10 @@ class Bookability
         }
     }
 	
+	/*
+	 * Simple class ping
+	 *
+	 */
     public function test() 
 	{
 		echo 'Hello';

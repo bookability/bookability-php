@@ -1,16 +1,13 @@
 <?php 
 
-error_reporting(E_ALL);
-ini_set('display_errors', 'on');
-
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
-
-try 
+class BookabilityTest extends PHPUnit_Framework_TestCase
 {
-	$bookability = new Bookability();
-	$bookability->test();
-} 
-catch (Exception $e) 
-{
-	echo $e->getMessage();
+    public function testCanTest()
+    {
+        // Arrange
+        $bookability = new Bookability();
+
+        // Act
+      	$bookability->test();
+    }
 }

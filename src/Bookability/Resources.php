@@ -1,6 +1,6 @@
 <?php
 
-class Bookability_Resouces
+class Bookability_Resources
 {	
     public function __construct(Bookability $master) 
 	{

@@ -24,6 +24,8 @@
         "phpunit/phpunit": "3.7.*"
     },
 	"autoload": {
-		"classmap": ["src/", "tests/"]
+		"psr-0": {
+			"Bookability": "src"
+		}
 	}
 }

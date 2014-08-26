@@ -86,10 +86,10 @@ class Bookability
         curl_setopt($this->ch, CURLOPT_TIMEOUT, $opts['timeout']);
 
 
-		$this->users = new Bookability_Bookings($this);
-		$this->users = new Bookability_Customers($this);
-		$this->users = new Bookability_Events($this);
-		$this->users = new Bookability_Resources($this);
+		$this->bookings = new Bookability_Bookings($this);
+		$this->customers = new Bookability_Customers($this);
+		$this->events = new Bookability_Events($this);
+		$this->resources = new Bookability_Resources($this);
     }
 
 	/*
@@ -234,6 +234,6 @@ class Bookability
 	 */
     public function test() 
 	{
-		echo 'Hello';
+		return true;
 	}
 }

@@ -20,10 +20,12 @@ class Bookability
 	 * Declare API values
 	 *
 	 */
-    public $apikey;
     public $ch;
-    public $root  = 'https://www.bookability.io/api';
-    public $debug = false;
+    public $username;
+    public $project;
+    public $apikey;
+    public $root  		= 'https://www.bookability.io/api/v1';
+    public $debug 		= false;
 
 	/*
 	 * Define error list
@@ -37,40 +39,14 @@ class Bookability
 	 * On creation of object, open cURL
 	 *
 	 */
-    public function __construct($apikey = null, $opts = array()) 
+    public function __construct($opts = array()) 
 	{
-        if (!$apikey) {
-            $apikey = getenv('BOOKABILITY_APIKEY');
-        }
-
-        if (!$apikey) {
-            $apikey = $this->readConfigs();
-        }
-
-        if (!$apikey) {
-            throw new Bookability_Error('You must provide a Bookability API key');
-        }
-
-        $this->apikey = $apikey;
-        $dc           = "us1";
-
-        if (strstr($this->apikey, "-")){
-            list($key, $dc) = explode("-", $this->apikey, 2);
-            if (!$dc) {
-                $dc = "us1";
-            }
-        }
-
-        $this->root = str_replace('https://api', 'https://' . $dc . '.api', $this->root);
-        $this->root = rtrim($this->root, '/') . '/';
-
         if (!isset($opts['timeout']) || !is_int($opts['timeout'])){
             $opts['timeout'] = 600;
         }
         if (isset($opts['debug'])){
             $this->debug = true;
         }
-
 
         $this->ch = curl_init();
 
@@ -84,7 +60,6 @@ class Bookability
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($this->ch, CURLOPT_TIMEOUT, $opts['timeout']);
-
 
 		$this->bookings = new Bookability_Bookings($this);
 		$this->customers = new Bookability_Customers($this);
@@ -107,19 +82,38 @@ class Bookability
 	 */
     public function call($url, $params, $verb = 'GET') 
 	{
-        $params['apikey'] = $this->apikey;
+        //if (!$this->apikey) {
+           // $this->apikey = $this->readConfigs();
+        //}
+		
+        if (!$this->apikey) {
+            throw new Bookability_Error('You must provide a Bookability API key');
+        }
+		
+        if (!$this->username) {
+            throw new Bookability_Error('You must provide a Bookability API username');
+        }
+		
+        if (!$this->project) {
+            throw new Bookability_Error('You must provide a Bookability API project alias');
+        }
         
         $params = json_encode($params);
         $ch     = $this->ch;
-
+		
+		$url = '/' . ltrim($url, '/');
+		$this->root = rtrim($this->root, '/');
+		
         curl_setopt($ch, CURLOPT_URL, $this->root . $url);
+		curl_setopt($ch, CURLOPT_USERPWD, $this->username . '@' . $this->project . ':' . $this->apikey);
+		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
 
         $start = microtime(true);
-        $this->log('Call to ' . $this->root . $url . '.json: ' . $params);
+        $this->log('Call to ' . $this->root . $url . $params);
         if ($this->debug) {
             $curl_buffer = fopen('php://memory', 'w+');
             curl_setopt($ch, CURLOPT_STDERR, $curl_buffer);
@@ -140,10 +134,11 @@ class Bookability
         if(curl_error($ch)) {
             throw new Bookability_HttpError("API call to $url failed: " . curl_error($ch));
         }
+		
         $result = json_decode($response_body, true);
         
-        if(floor($info['http_code'] / 100) >= 4) {
-            throw $this->castError($result);
+        if (floor($info['http_code'] / 100) >= 4) {
+            throw $this->castError($result . $info['http_code']);
         }
 
         return $result;

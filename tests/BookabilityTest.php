@@ -9,29 +9,22 @@ class BookabilityTest extends PHPUnit_Framework_TestCase
     {
 		// Arrange
         $bookability = new Bookability();
-        $bookability = new Bookability();
-		$bookability->root = 'http://www.bookability.test/api/v1';
-		$bookability->username = 'richard.davey';
-		$bookability->project = 'twosuperior';
-		$bookability->apikey = 'cf22642dab4e7942a9b9dd3f654042ad7ff9f7b8';
-		$bookability->debug = true;
+		$bookability->dsn = 'http://richard.davey@twosuperior:cf22642dab4e7942a9b9dd3f654042ad7ff9f7b8@www.bookability.test:80/api/v1';
 		
 		// Test
-		$this->assertTrue($bookability->test());
+		$this->assertTrue($bookability->ping());
     }
 	
     public function testGetEvents()
     {
 		// Arrange
         $bookability = new Bookability();
-        $bookability = new Bookability();
-		$bookability->root = 'http://www.bookability.test/api/v1';
-		$bookability->username = 'richard.davey';
-		$bookability->project = 'twosuperior';
-		$bookability->apikey = 'cf22642dab4e7942a9b9dd3f654042ad7ff9f7b8';
-		$bookability->debug = true;
+		$bookability->dsn = 'http://richard.davey@twosuperior:cf22642dab4e7942a9b9dd3f654042ad7ff9f7b8@www.bookability.test:80/api/v1';
 		
 		// Test
 		$events = $bookability->events->find();
+		
+		// Test
+		$this->assertTrue(is_array($events));
     }
 }

@@ -17,15 +17,17 @@ require_once 'Bookability/Resources.php';
 class Bookability
 {
 	/*
+	 * Global curl object
+	 *
+	 */
+    protected $ch;
+	
+	/*
 	 * Declare API values
 	 *
 	 */
-    public $ch;
-    public $username;
-    public $project;
-    public $apikey;
-    public $root  		= 'https://www.bookability.io/api/v1';
-    public $debug 		= false;
+    public $dsn  	= 'https://www.bookability.io/api/v1';
+    public $debug 	= false;
 
 	/*
 	 * Define error list
@@ -35,37 +37,41 @@ class Bookability
         "ValidationError" => "Bookability_ValidationError"
     );
 
+	// --------------------------------------------------------------------
+
 	/*
 	 * On creation of object, open cURL
 	 *
 	 */
     public function __construct($opts = array()) 
 	{
-        if (!isset($opts['timeout']) || !is_int($opts['timeout'])){
-            $opts['timeout'] = 600;
-        }
-        if (isset($opts['debug'])){
-            $this->debug = true;
-        }
-
+		// load config file
+		$config = $this->readConfigs();
+		
+		// merge config
+		$config = array_merge($config, $opts);
+			
+		// init curl
         $this->ch = curl_init();
-
-        if (isset($opts['CURLOPT_FOLLOWLOCATION']) && $opts['CURLOPT_FOLLOWLOCATION'] === true) {
-            curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);    
-        }
-
+		
+		// set default curl options
         curl_setopt($this->ch, CURLOPT_USERAGENT, 'Bookability-PHP/2.0.5');
         curl_setopt($this->ch, CURLOPT_POST, true);
         curl_setopt($this->ch, CURLOPT_HEADER, false);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($this->ch, CURLOPT_TIMEOUT, $opts['timeout']);
+		
+		// initialize config
+		$this->initialize($config);
 
+		// load bookability modules
 		$this->bookings = new Bookability_Bookings($this);
 		$this->customers = new Bookability_Customers($this);
 		$this->events = new Bookability_Events($this);
 		$this->resources = new Bookability_Resources($this);
     }
+
+	// --------------------------------------------------------------------
 
 	/*
 	 * On destruction of object, close cURL
@@ -76,73 +82,149 @@ class Bookability
         curl_close($this->ch);
     }
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Initialize Preferences
+	 *
+	 * @access	public
+	 * @param	array	initialization parameters
+	 * @return	void
+	 */
+	private function initialize($params = array())
+	{
+		if (count($params) > 0)
+		{
+			foreach ($params as $key => $value)
+			{
+				if (isset($this->{$key}))
+				{
+					$this->{$key} = $value;
+				}
+				else if (strpos($key, 'CURLOPT_') === 0) 
+				{
+					curl_setopt($this->ch, $key, $value);    
+				}
+			}
+		}
+	}
+	
+	// --------------------------------------------------------------------
+
 	/*
 	 * Make a call to the API
 	 *
 	 */
-    public function call($url, $params, $verb = 'GET') 
-	{
-        //if (!$this->apikey) {
-           // $this->apikey = $this->readConfigs();
-        //}
+    public function call($path, $params, $verb = 'GET') 
+	{		
+		// check for dsn
+        if (!$this->dsn) 
+		{
+            throw new Bookability_Error('You must provide a Bookability API DSN');
+        }
 		
-        if (!$this->apikey) {
+		// parse dsn
+		$url = parse_url($this->dsn);
+		
+		// check for host
+        if (empty($url['host'])) 
+		{
+            throw new Bookability_Error('You must provide a Bookability API host');
+        }
+		
+		// check for pass
+        if (empty($url['pass'])) 
+		{
             throw new Bookability_Error('You must provide a Bookability API key');
         }
 		
-        if (!$this->username) {
+		// check for user
+        if (empty($url['user'])) 
+		{
             throw new Bookability_Error('You must provide a Bookability API username');
         }
+		else if (!strstr($url['user'], '@'))
+		{
+			throw new Bookability_Error('You must provide a Bookability API project alias');
+		}
 		
-        if (!$this->project) {
-            throw new Bookability_Error('You must provide a Bookability API project alias');
-        }
-        
+		// build url again
+		$host = (!empty($url['scheme']) ? $url['scheme'] : 'http') . '://' . $url['host'] . (!empty($url['post']) ? (':' . $url['post']) : '') . (!empty($url['path']) ? $url['path'] : '');
+		
+		// clean host
+		$host = rtrim($host, '/');
+		
+		// clean path
+		$path = '/' . ltrim($path, '/');
+		
+		// encode parameters
         $params = json_encode($params);
         $ch     = $this->ch;
 		
-		$url = '/' . ltrim($url, '/');
-		$this->root = rtrim($this->root, '/');
-		
-        curl_setopt($ch, CURLOPT_URL, $this->root . $url);
-		curl_setopt($ch, CURLOPT_USERPWD, $this->username . '@' . $this->project . ':' . $this->apikey);
+		// set up and override curl
+        curl_setopt($ch, CURLOPT_URL, $host . $path);
+		curl_setopt($ch, CURLOPT_USERPWD, $url['user'] . ':' . $url['pass']);
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
 
+		// set blank object
+		$response = new \stdClass();
+	
+		// start log
         $start = microtime(true);
-        $this->log('Call to ' . $this->root . $url . $params);
-        if ($this->debug) {
+        $this->log('Call to ' . $host . $path . $params);
+        if ($this->debug) 
+		{
             $curl_buffer = fopen('php://memory', 'w+');
             curl_setopt($ch, CURLOPT_STDERR, $curl_buffer);
         }
 
-        $response_body = curl_exec($ch);
+		// get response
+		$response->content = curl_exec($ch);
+		$response->header = curl_getinfo($ch);
+		$response->error = null;
+		
+		// check for status code
+		if (empty($response->header['http_code'])) 
+		{
+			$response->error = curl_errno($ch);
+		}
 
-        $info = curl_getinfo($ch);
+		// end log
         $time = microtime(true) - $start;
-        if($this->debug) {
+        if($this->debug) 
+		{
             rewind($curl_buffer);
             $this->log(stream_get_contents($curl_buffer));
             fclose($curl_buffer);
         }
         $this->log('Completed in ' . number_format($time * 1000, 2) . 'ms');
-        $this->log('Got response: ' . $response_body);
+        $this->log('Got response: ' . $response->content);
 
-        if(curl_error($ch)) {
-            throw new Bookability_HttpError("API call to $url failed: " . curl_error($ch));
+		// error found
+        if ($response->error) 
+		{
+            throw new Bookability_HttpError('API call to ' . $host . $path . ' failed: ' . $response->error);
         }
 		
-        $result = json_decode($response_body, true);
+		// decode response
+        $result = @json_decode($response->content, true);
         
-        if (floor($info['http_code'] / 100) >= 4) {
-            throw $this->castError($result . $info['http_code']);
+        // check error code
+		if (floor($response->header['http_code'] / 100) >= 4) 
+		{
+			// throw mapped error
+            throw $this->castError($result);
         }
 
+		// otherwise return data
         return $result;
     }
+
+	// --------------------------------------------------------------------
 
 	/*
 	 * An alias for the GET call
@@ -153,6 +235,8 @@ class Bookability
 		return $this->call($url, $params, 'GET');
 	}
 	
+	// --------------------------------------------------------------------
+
 	/*
 	 * An alias for the DELETE call
 	 *
@@ -162,6 +246,8 @@ class Bookability
 		return $this->call($url, $params, 'DELETE');
 	}
 	
+	// --------------------------------------------------------------------
+
 	/*
 	 * An alias for the POST call
 	 *
@@ -171,6 +257,8 @@ class Bookability
 		return $this->call($url, $params, 'POST');
 	}
 	
+	// --------------------------------------------------------------------
+
 	/*
 	 * An alias for the PUT call
 	 *
@@ -180,23 +268,30 @@ class Bookability
 		return $this->call($url, $params, 'PUT');
 	}
 	
+	// --------------------------------------------------------------------
+
 	/*
 	 * Load additional config values
 	 *
 	 */
     public function readConfigs() 
 	{
-        $paths = array('~/.bookability.key', '/etc/bookability.key');
-        foreach($paths as $path) {
-            if(file_exists($path)) {
-                $apikey = trim(file_get_contents($path));
-                if ($apikey) {
-                    return $apikey;
+        $paths = array('~/bookability.ini', '/etc/bookability.ini');
+        foreach($paths as $path) 
+		{
+            if (file_exists($path)) 
+			{
+                $config = parse_ini_file($path);
+                if ($config) 
+				{
+                    return $config;
                 }
             }
         }
-        return false;
+        return array();
     }
+
+	// --------------------------------------------------------------------
 
 	/*
 	 * Process errors
@@ -204,13 +299,20 @@ class Bookability
 	 */
     public function castError($result) 
 	{
-        if ($result['status'] !== 'error' || !$result['name']) {
+		// look for error name
+        if (empty($result['error']) || empty($result['name'])) 
+		{
             throw new Bookability_Error('We received an unexpected error: ' . json_encode($result));
         }
 
+		// map error
         $class = (isset(self::$error_map[$result['name']])) ? self::$error_map[$result['name']] : 'Bookability_Error';
-        return new $class($result['error'], $result['code']);
+        
+		// return error
+		return new $class($result['error'], $result['code']);
     }
+
+	// --------------------------------------------------------------------
 
 	/*
 	 * Log for debug output
@@ -218,16 +320,19 @@ class Bookability
 	 */
     public function log($msg) 
 	{
-        if ($this->debug) {
+        if ($this->debug) 
+		{
             error_log($msg);
         }
     }
 	
+	// --------------------------------------------------------------------
+
 	/*
 	 * Simple class ping
 	 *
 	 */
-    public function test() 
+    public function ping() 
 	{
 		return true;
 	}

@@ -149,7 +149,7 @@ class Bookability
 		}
 		
 		// build url again
-		$host = (!empty($url['scheme']) ? $url['scheme'] : 'http') . '://' . $url['host'] . (!empty($url['post']) ? (':' . $url['post']) : '') . (!empty($url['path']) ? $url['path'] : '');
+		$host = (!empty($url['scheme']) ? $url['scheme'] : 'http') . '://' . $url['host'] . (!empty($url['port']) ? (':' . $url['port']) : '') . (!empty($url['path']) ? $url['path'] : '');
 		
 		// clean host
 		$host = rtrim($host, '/');

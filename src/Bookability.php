@@ -56,7 +56,6 @@ class Bookability
 		
 		// set default curl options
         curl_setopt($this->ch, CURLOPT_USERAGENT, 'Bookability-PHP/2.0.5');
-        curl_setopt($this->ch, CURLOPT_POST, true);
         curl_setopt($this->ch, CURLOPT_HEADER, false);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
@@ -157,18 +156,34 @@ class Bookability
 		// clean path
 		$path = '/' . ltrim($path, '/');
 		
+		// clean verb
+		$verb = strtoupper($verb);
+			
 		// encode parameters
         $params = json_encode($params);
         $ch     = $this->ch;
 		
+		// ensure correct method is used to pass data
+        switch ($verb) {
+			case 'GET':
+		    	curl_setopt($ch, CURLOPT_URL, $host . $path . '?' . http_build_query($params));
+				break;
+			case 'POST':	
+			case 'PUT':	
+			case 'DELETE':	
+        		curl_setopt($ch, CURLOPT_URL, $host . $path);
+        		curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+				break;
+			default:
+				throw new Bookability_Error('Sorry the HTTP verb ' . $verb . ' was not recognised');
+		}
+		
 		// set up and override curl
-        curl_setopt($ch, CURLOPT_URL, $host . $path);
-		curl_setopt($ch, CURLOPT_USERPWD, $url['user'] . ':' . $url['pass']);
+        curl_setopt($ch, CURLOPT_USERPWD, $url['user'] . ':' . $url['pass']);
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
+		curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
 
 		// set blank object
 		$response = new \stdClass();

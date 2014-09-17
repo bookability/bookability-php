@@ -1,5 +1,5 @@
 {
-	"name": "bookability/bookability",
+	"name": "bookability/bookability-php",
 	"type": "library",
 	"description": "Bookability client for PHP with support for API v1",
 	"keywords": [
@@ -7,7 +7,7 @@
 		"booking",
 		"twosuperior"
 	],
-	"homepage": "https://github.com/bookability/bookability",
+	"homepage": "https://github.com/bookability/bookability-php",
 	"license": "MIT",
 	"authors": [
 		{

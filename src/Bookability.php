@@ -159,18 +159,25 @@ class Bookability
 		// clean verb
 		$verb = strtoupper($verb);
 			
-		// encode parameters
-        $params = json_encode($params);
-        $ch     = $this->ch;
+		// get class object
+        $ch = $this->ch;
 		
 		// ensure correct method is used to pass data
         switch ($verb) {
 			case 'GET':
-		    	curl_setopt($ch, CURLOPT_URL, $host . $path . '?' . http_build_query($params));
+			
+				// encode parameters
+        		$params = http_build_query($params);
+				
+		    	curl_setopt($ch, CURLOPT_URL, $host . $path . '?' . $params);
 				break;
 			case 'POST':	
 			case 'PUT':	
 			case 'DELETE':	
+			
+				// encode parameters
+	        	$params = json_encode($params);
+			
         		curl_setopt($ch, CURLOPT_URL, $host . $path);
         		curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);

@@ -24,7 +24,7 @@ class Bookability_Resources
      */
     public function get($token) 
 	{
-        return $this->master->get('resources/' . $token, $_params);
+        return $this->master->get('resources/' . $token);
     }
 	
     /**
@@ -54,6 +54,6 @@ class Bookability_Resources
      */
     public function delete($token) 
 	{
-        return $this->master->delete('resources/' . $token, $_params);
+        return $this->master->delete('resources/' . $token);
     }
 }

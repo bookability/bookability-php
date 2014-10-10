@@ -114,7 +114,7 @@ class Bookability
 	 * Make a call to the API
 	 *
 	 */
-    public function call($path, $params, $verb = 'GET') 
+    public function call($path, $params = array(), $verb = 'GET') 
 	{		
 		// check for dsn
         if (!$this->dsn) 
@@ -252,7 +252,7 @@ class Bookability
 	 * An alias for the GET call
 	 *
 	 */
-    public function get($url, $params) 
+    public function get($url, $params = array()) 
 	{
 		return $this->call($url, $params, 'GET');
 	}
@@ -263,7 +263,7 @@ class Bookability
 	 * An alias for the DELETE call
 	 *
 	 */
-    public function delete($url, $params) 
+    public function delete($url, $params = array()) 
 	{
 		return $this->call($url, $params, 'DELETE');
 	}
@@ -274,7 +274,7 @@ class Bookability
 	 * An alias for the POST call
 	 *
 	 */
-    public function post($url, $params) 
+    public function post($url, $params = array()) 
 	{
 		return $this->call($url, $params, 'POST');
 	}
@@ -285,7 +285,7 @@ class Bookability
 	 * An alias for the PUT call
 	 *
 	 */
-    public function put($url, $params) 
+    public function put($url, $params = array()) 
 	{
 		return $this->call($url, $params, 'PUT');
 	}

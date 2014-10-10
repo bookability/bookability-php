@@ -9,7 +9,7 @@ class ResourcesTest extends PHPUnit_Framework_TestCase
     {
 		// Arrange
         $bookability = new Bookability();
-		$bookability->dsn = 'http://richard.davey@twosuperior:cf22642dab4e7942a9b9dd3f654042ad7ff9f7b8@api.bookability.test:80/v1';
+		$bookability->dsn = 'http://username@project:your-key-goes-here@api.bookability.io:80/v1';
 		
 		// get resources
 		$resources = $bookability->resources->find();

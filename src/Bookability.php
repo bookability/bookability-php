@@ -233,7 +233,7 @@ class Bookability
         }
 		
 		// decode response
-        $result = @json_decode($response->content, true);
+        $result = @json_decode($response->content);
         
         // check error code
 		if (floor($response->header['http_code'] / 100) >= 4) 

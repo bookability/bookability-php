@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Bookability/Availability.php';
 require_once 'Bookability/Bookings.php';
 require_once 'Bookability/Customers.php';
 require_once 'Bookability/Events.php';
@@ -34,7 +35,8 @@ class Bookability
 	 *
 	 */
     public static $error_map = array(
-        "ValidationError" => "Bookability_ValidationError"
+        "ValidationError" 			=> "Bookability_ValidationError",
+		"BadMethodCallException"	=> "Bookability_BadMethodCall",
     );
 
 	// --------------------------------------------------------------------
@@ -64,6 +66,7 @@ class Bookability
 		$this->initialize($config);
 
 		// load bookability modules
+		$this->availability = new Bookability_Availability($this);
 		$this->bookings = new Bookability_Bookings($this);
 		$this->customers = new Bookability_Customers($this);
 		$this->events = new Bookability_Events($this);
@@ -322,16 +325,16 @@ class Bookability
     public function castError($result) 
 	{
 		// look for error name
-        if (empty($result['error']) || empty($result['name'])) 
+        if (empty($result->error) || empty($result->name)) 
 		{
             throw new Bookability_Error('We received an unexpected error: ' . json_encode($result));
         }
 
 		// map error
-        $class = (isset(self::$error_map[$result['name']])) ? self::$error_map[$result['name']] : 'Bookability_Error';
+        $class = (isset(self::$error_map[$result->name])) ? self::$error_map[$result->name] : 'Bookability_Error';
         
 		// return error
-		return new $class($result['error'], $result['code']);
+		return new $class($result->message, $result->code);
     }
 
 	// --------------------------------------------------------------------

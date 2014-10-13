@@ -28,7 +28,7 @@ class Bookability_Availability
     }
 	
     /**
-     * Retrieve a list of availability for an event date
+     * Retrieve a list of availability for a single event date
 	 *
      * @return array
      */

@@ -24,7 +24,7 @@ class Bookability_Bookings
      */
     public function get($token) 
 	{
-        return $this->master->get('bookings/' . $token, $_params);
+        return $this->master->get('bookings/' . $token);
     }
 	
     /**
@@ -54,6 +54,6 @@ class Bookability_Bookings
      */
     public function delete($token) 
 	{
-        return $this->master->delete('bookings/' . $token, $_params);
+        return $this->master->delete('bookings/' . $token);
     }
 }

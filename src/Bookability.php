@@ -71,6 +71,7 @@ class Bookability
 		$this->customers = new Bookability_Customers($this);
 		$this->events = new Bookability_Events($this);
 		$this->resources = new Bookability_Resources($this);
+		$this->bundles = new Bookability_Bundles($this);
     }
 
 	// --------------------------------------------------------------------

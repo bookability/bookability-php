@@ -1,5 +1,32 @@
+### Twosuperior | Laravel Boilerplate .gitignore ###
+### Last updated: 20/09/2014 ###
+
+## Laravel Specific ###
+/bootstrap/compiled.php
 /vendor
 composer.phar
 composer.lock
+.env.*.php
+.env.php
+
+## JetBrains Specific ###
+.idea/
+_ide_helpers.php
+
+## Apple Specific ##
 .DS_Store
 Thumbs.db
+scripts/
+shell/
+
+## Sublime Specific ##
+*.sublime-project
+*.sublime-workspace
+
+## Code Kit Specific ##
+config.codekit
+
+## Sass Specific ##
+.sass-cache/
+
+## Add Project Rules Below ##

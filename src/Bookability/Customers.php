@@ -24,7 +24,7 @@ class Bookability_Customers
      */
     public function get($token) 
 	{
-        return $this->master->get('customers/' . $token, $_params);
+        return $this->master->get('customers/' . $token);
     }
 	
     /**
@@ -54,6 +54,6 @@ class Bookability_Customers
      */
     public function delete($token) 
 	{
-        return $this->master->delete('customers/' . $token, $_params);
+        return $this->master->delete('customers/' . $token);
     }
 }

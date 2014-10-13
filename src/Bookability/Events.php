@@ -24,7 +24,7 @@ class Bookability_Events
      */
     public function get($token) 
 	{
-        return $this->master->get('events/' . $token, $_params);
+        return $this->master->get('events/' . $token);
     }
 	
     /**
@@ -54,6 +54,6 @@ class Bookability_Events
      */
     public function delete($token) 
 	{
-        return $this->master->delete('events/' . $token, $_params);
+        return $this->master->delete('events/' . $token);
     }
 }

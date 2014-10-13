@@ -1,11 +1,7 @@
 <?php
 
-class Bookability_Bundles
+class Bookability_Bundles Extends Bookability_Base
 {
-	public function __construct(Bookability $master)
-	{
-		$this->master = $master;
-	}
 
 	/**
 	 * Retrieve a list of bundles
@@ -14,7 +10,7 @@ class Bookability_Bundles
 	 */
 	public function find($_params = array())
 	{
-		return $this->master->get('bundles', $_params);
+		return $this->transform($this->master->get('bundles', $_params), find);
 	}
 
 	/**
@@ -24,7 +20,7 @@ class Bookability_Bundles
 	 */
 	public function get($token)
 	{
-		return $this->master->get('bundles/' . $token);
+		return $this->transform($this->master->get('bundles/' . $token), get);
 	}
 
 	/**

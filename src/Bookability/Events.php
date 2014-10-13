@@ -1,11 +1,7 @@
 <?php
 
-class Bookability_Events
-{	
-    public function __construct(Bookability $master) 
-	{
-        $this->master = $master;
-    }
+class Bookability_Events Extends Bookability_Base
+{
 
     /**
      * Retrieve a list of events
@@ -14,7 +10,7 @@ class Bookability_Events
      */
     public function find($_params = array()) 
 	{
-        return $this->master->get('events', $_params);
+		return $this->transform($this->master->get('events', $_params), find);
     }
 	
     /**
@@ -24,7 +20,7 @@ class Bookability_Events
      */
     public function get($token) 
 	{
-        return $this->master->get('events/' . $token);
+		return $this->transform($this->master->get('events/' . $token), get);
     }
 	
     /**

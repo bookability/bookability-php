@@ -1,11 +1,7 @@
 <?php
 
-class Bookability_Customers
-{	
-    public function __construct(Bookability $master) 
-	{
-        $this->master = $master;
-    }
+class Bookability_Customers Extends Bookability_Base
+{
 
     /**
      * Retrieve a list of customers
@@ -14,7 +10,7 @@ class Bookability_Customers
      */
     public function find($_params = array()) 
 	{
-        return $this->master->get('customers', $_params);
+		return $this->transform($this->master->get('customers', $_params), find);
     }
 	
     /**
@@ -24,7 +20,7 @@ class Bookability_Customers
      */
     public function get($token) 
 	{
-        return $this->master->get('customers/' . $token);
+		return $this->transform($this->master->get('customers/' . $token), get);
     }
 	
     /**

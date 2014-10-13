@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Bookability/Availability.php';
+require_once 'Bookability/Base.php';
 require_once 'Bookability/Bookings.php';
 require_once 'Bookability/Customers.php';
 require_once 'Bookability/Events.php';
@@ -61,7 +62,7 @@ class Bookability
         curl_setopt($this->ch, CURLOPT_HEADER, false);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 30);
-		
+
 		// initialize config
 		$this->initialize($config);
 
@@ -237,7 +238,7 @@ class Bookability
         }
 		
 		// decode response
-        $result = @json_decode($response->content);
+        $result = @json_decode($response->content, true);
         
         // check error code
 		if (floor($response->header['http_code'] / 100) >= 4) 

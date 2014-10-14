@@ -24,29 +24,12 @@ In order to install add the following to your `composer.json` file within the `r
 		…	
 	}
 
-Within Laravel, locate the file `..app/config/app.php` *.
-
-Add the following to the `providers` array:
-
-	'providers' => array(
-		…
-		'Bookability\BookabilityL4\BookabilityServiceProvider',
-		…
-	),
-
-Furthermore, add the following the the `aliases` array:
-
-	'aliases' => array(
-		…
-		'Bookability' => 'Bookability\BookabilityL4\Facades\Bookability',
-		…
-	),
+You can then use the following in your code:
 	
-Publish the configuration
+	$bookability = new Bookability();
+	$bookability->dsn = 'http://username@project:your-key-goes-here@api.bookability.io:80/v1';
+	$events = $bookability->events->find();
 
-	$ php artisan config:publish bookability/bookability-l4
-
-Lastly, run the command `php composer.phar install` command to install it.
 
 ### Without Composer
 

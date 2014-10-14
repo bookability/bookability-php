@@ -10,7 +10,7 @@ class Bookability_Resources Extends Bookability_Base
      */
     public function find($_params = array()) 
 	{
-        return $this->transform($this->master->get('resources', $_params), find);
+        return $this->transform($this->master->get('resources', $_params));
     }
 	
     /**
@@ -20,7 +20,7 @@ class Bookability_Resources Extends Bookability_Base
      */
     public function get($token) 
 	{
-		return $this->transform($this->master->get('resources/' . $token), get);
+		return $this->transform($this->master->get('resources/' . $token));
     }
 	
     /**

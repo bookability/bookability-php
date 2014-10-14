@@ -10,7 +10,7 @@ class Bookability_Events Extends Bookability_Base
      */
     public function find($_params = array()) 
 	{
-		return $this->transform($this->master->get('events', $_params), find);
+		return $this->transform($this->master->get('events', $_params));
     }
 	
     /**
@@ -20,7 +20,7 @@ class Bookability_Events Extends Bookability_Base
      */
     public function get($token) 
 	{
-		return $this->transform($this->master->get('events/' . $token), get);
+		return $this->transform($this->master->get('events/' . $token));
     }
 	
     /**

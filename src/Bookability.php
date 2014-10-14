@@ -3,6 +3,7 @@
 require_once 'Bookability/Availability.php';
 require_once 'Bookability/Base.php';
 require_once 'Bookability/Bookings.php';
+require_once 'Bookability/Collection.php';
 require_once 'Bookability/Customers.php';
 require_once 'Bookability/Events.php';
 require_once 'Bookability/Exceptions.php';

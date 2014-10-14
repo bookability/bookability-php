@@ -13,8 +13,8 @@ class ResourcesTest extends PHPUnit_Framework_TestCase
 		
 		// get resources
 		$resources = $bookability->resources->find();
-
+		
 		// Test
-		$this->assertTrue(is_array($resources));
+		$this->assertTrue($resources->count() > 0);
     }
 }

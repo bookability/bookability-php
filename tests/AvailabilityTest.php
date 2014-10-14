@@ -15,6 +15,6 @@ class AvailabilityTest extends PHPUnit_Framework_TestCase
 		$availability = $bookability->availability->find('58831c907efbb9cc95a71586acf6ed91');
 		
 		// Test
-		$this->assertTrue(is_array($availability));
+		$this->assertTrue($availability->count() > 0);
     }
 }

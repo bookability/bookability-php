@@ -25,6 +25,6 @@ class BookabilityTest extends PHPUnit_Framework_TestCase
 		$events = $bookability->events->find();
 		
 		// Test
-		$this->assertTrue(is_array($events));
+		$this->assertTrue($events->count() > 0);
     }
 }

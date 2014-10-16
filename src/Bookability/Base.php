@@ -43,14 +43,26 @@ class Bookability_Base
 			{
 				$collection->data = array_map(function ($item)
 				{
-					return (object) $item;
+					return $this->arrayToObject($item);
 				}, $data);
 			}
 			return $collection;
 		}
 		else
 		{
-			return (object) $response;
+			return (object) $this->arrayToObject($response); 
 		}
+	}
+	
+	protected function objectToArray($d) 
+	{
+	    if (is_object($d)) $d = get_object_vars($d);
+
+	    return is_array($d) ? array_map([$this, __FUNCTION__], $d) : $d;
+	}
+
+	protected function arrayToObject($d) 
+	{
+	    return is_array($d) ? (object) array_map([$this, __FUNCTION__], $d) : $d;
 	}
 }

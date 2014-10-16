@@ -30,7 +30,7 @@ class Bookability_Resources Extends Bookability_Base
      */
     public function create($_params = array()) 
 	{
-        return $this->master->post('resources', $_params);
+        return $this->transform($this->master->post('resources', $_params));
     }
 	
     /**
@@ -40,7 +40,7 @@ class Bookability_Resources Extends Bookability_Base
      */
     public function update($token, $_params = array()) 
 	{
-        return $this->master->put('resources/' . $token, $_params);
+        return $this->transform($this->master->put('resources/' . $token, $_params));
     }
 	
     /**

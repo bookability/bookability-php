@@ -157,7 +157,7 @@ class Bookability
 		$host = (!empty($url['scheme']) ? $url['scheme'] : 'http') . '://' . $url['host'] . (!empty($url['port']) ? (':' . $url['port']) : '') . (!empty($url['path']) ? $url['path'] : '');
 		
 		// clean host
-		$host = rtrim($host, '/');
+		$host = trim(rtrim($host, '/'));
 		
 		// clean path
 		$path = '/' . ltrim($path, '/');
@@ -197,6 +197,7 @@ class Bookability
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
 		curl_setopt($ch, CURLOPT_VERBOSE, $this->debug);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
 		// set blank object
 		$response = new \stdClass();

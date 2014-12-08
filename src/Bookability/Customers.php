@@ -30,7 +30,7 @@ class Bookability_Customers Extends Bookability_Base
      */
     public function create($_params = array()) 
 	{
-        return $this->master->post('customers', $_params);
+        return $this->transform($this->master->post('customers', $_params));
     }
 	
     /**
@@ -40,7 +40,7 @@ class Bookability_Customers Extends Bookability_Base
      */
     public function update($token, $_params = array()) 
 	{
-        return $this->master->put('customers/' . $token, $_params);
+        return $this->transform($this->master->put('customers/' . $token, $_params));
     }
 	
     /**

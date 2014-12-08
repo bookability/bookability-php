@@ -12,30 +12,40 @@ class Bookability_Base
 		// create collection
 		$collection = new Bookability_Collection();
 			
-		if (isset($response['total']))
+		// has pagination or other data
+		if (isset($response['meta']))
 		{
-			$collection->total = $response['total'];
+			// get meta
+			$meta = $response['meta'];
+			
+			// check for values
+			if (isset($meta['total']))
+			{
+				$collection->total = $meta['total'];
+			}
+			if (isset($meta['per_page']))
+			{
+				$collection->perPage = $meta['per_page'];
+			}
+			if (isset($meta['current_page']))
+			{
+				$collection->currentPage = $meta['current_page'];
+			}
+			if (isset($meta['last_page']))
+			{
+				$collection->lastPage = $meta['last_page'];
+			}
+			if (isset($meta['from']))
+			{
+				$collection->from = $meta['from'];
+			}
+			if (isset($response['to']))
+			{
+				$collection->to = $meta['to'];
+			}
 		}
-		if (isset($response['per_page']))
-		{
-			$collection->perPage = $response['per_page'];
-		}
-		if (isset($response['current_page']))
-		{
-			$collection->currentPage = $response['current_page'];
-		}
-		if (isset($response['last_page']))
-		{
-			$collection->lastPage = $response['last_page'];
-		}
-		if (isset($response['from']))
-		{
-			$collection->from = $response['from'];
-		}
-		if (isset($response['to']))
-		{
-			$collection->to = $response['to'];
-		}
+		
+		// has data
 		if (isset($response['data']))
 		{
 			$data = $response['data'];
@@ -46,12 +56,10 @@ class Bookability_Base
 					return $this->arrayToObject($item);
 				}, $data);
 			}
-			return $collection;
 		}
-		else
-		{
-			return (object) $this->arrayToObject($response); 
-		}
+		
+		// return collection
+		return $collection;
 	}
 	
 	protected function objectToArray($d) 

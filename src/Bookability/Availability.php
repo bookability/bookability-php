@@ -1,6 +1,6 @@
 <?php
 
-class Bookability_Availability
+class Bookability_Availability Extends Bookability_Base
 {	
     public function __construct(Bookability $master) 
 	{
@@ -14,7 +14,7 @@ class Bookability_Availability
      */
     public function find($token, $_params = array()) 
 	{
-        return $this->master->get('availability/' . $token, $_params);
+        return $this->transform($this->master->get('availability/' . $token, $_params));
     }
 	
     /**
@@ -24,7 +24,7 @@ class Bookability_Availability
      */
     public function month($token, $_params = array()) 
 	{
-        return $this->master->get('availability/' . $token . '/month', $_params);
+        return $this->transform($this->master->get('availability/' . $token . '/month', $_params));
     }
 	
     /**
@@ -34,6 +34,6 @@ class Bookability_Availability
      */
     public function date($token, $_params = array()) 
 	{
-        return $this->master->get('availability/' . $token . '/date', $_params);
+        return $this->transform($this->master->get('availability/' . $token . '/date', $_params));
     }
 }

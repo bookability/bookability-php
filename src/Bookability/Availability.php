@@ -24,7 +24,7 @@ class Bookability_Availability Extends Bookability_Base
      */
     public function month($token, $_params = array()) 
 	{
-        return $this->transform($this->master->get('availability/' . $token . '/month', $_params));
+        return $this->transform($this->master->get('availability/' . $token . '/month', $_params), true);
     }
 	
     /**
@@ -34,6 +34,6 @@ class Bookability_Availability Extends Bookability_Base
      */
     public function date($token, $_params = array()) 
 	{
-        return $this->transform($this->master->get('availability/' . $token . '/date', $_params));
+        return $this->transform($this->master->get('availability/' . $token . '/date', $_params), true);
     }
 }

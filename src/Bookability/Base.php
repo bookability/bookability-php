@@ -7,7 +7,7 @@ class Bookability_Base
 		$this->master = $master;
 	}
 
-	protected function transform($response)
+	protected function transform($response, $single = false)
 	{
 		// create collection
 		$collection = new Bookability_Collection();
@@ -51,10 +51,17 @@ class Bookability_Base
 			$data = $response['data'];
 			if (is_array($data))
 			{
-				$collection->data = array_map(function ($item)
+				if ($single) 
 				{
-					return $this->arrayToObject($item);
-				}, $data);
+					return $this->arrayToObject($data);
+				}
+				else
+				{
+					$collection->data = array_map(function ($item)
+					{
+						return $this->arrayToObject($item);
+					}, $data);
+				}
 			}
 		}
 		
